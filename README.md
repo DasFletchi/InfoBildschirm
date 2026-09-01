@@ -1,5 +1,7 @@
 # 🖥️ InfoBildschirm
 
+> ⚡ **Hinweis:** Dieses Projekt wurde an einem Nachmittag schnell mit KI hingezimmert, weil die bisherige Infobildschirm-Lösung an unserer Schule einfach kompletter Müll war. Funktioniert einwandfrei, ist ultra-leichtgewichtig (0 Dependencies) und tut genau das, was es soll!
+
 Leichtgewichtige Digital-Signage-Software für Schulen – läuft auf Raspberry Pi, Mini-PC oder Linux-Server.  
 **Keine externen Abhängigkeiten**, nur Python 3.10+ (Standardbibliothek).
 
