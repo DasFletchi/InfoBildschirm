@@ -1,5 +1,7 @@
 __pycache__/
 *.pyc
 data/*.db
+data/cleanup.log
 media/*
 !media/.gitkeep
+.env
