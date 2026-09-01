@@ -31,6 +31,52 @@ Am Ende bekommt man **zwei Adressen**:
 
 ---
 
+## 🎮 Nach der Installation: Wie starte & benutze ich das?
+
+Nach dem Ausführen des Installers musst du **nichts mehr manuell starten** – der Server läuft bereits als Systemdienst im Hintergrund und startet bei jedem Booten des Raspberry Pi automatisch mit!
+
+### 1. 📺 Auf dem Info-Bildschirm anzeigen
+1. Öffne auf dem Bildschirm einen Browser (z.B. Chromium).
+2. Rufe folgende Adresse auf:
+   ```text
+   http://localhost:8080/display
+   ```
+3. Drücke **`F11`** für den echten Vollbild-Modus.  
+   *(Der Mauszeiger wird automatisch ausgeblendet, sobald er stillsteht!)*
+
+### 2. ⚙️ Vom Laptop / PC aus Inhalte verwalten
+1. Öffne im selben Schulnetzwerk deinen Browser.
+2. Rufe die IP-Adresse des InfoBildschirms auf:
+   ```text
+   http://<IP-Adresse-des-Raspberry-Pi>:8080/manage
+   ```
+   *(oder über die Cloudflare-Internet-URL, falls gewählt)*
+3. **Login:** Benutzername: egal (z.B. `admin`), Passwort: dein beim Setup gewähltes Passwort.
+4. Dateien hochladen oder das Wetter per 1-Click aktivieren!
+
+### 3. 🛠️ Nützliche Befehle zur Steuerung
+
+Falls du den Dienst stoppen, neu starten oder die Logs prüfen willst:
+
+```bash
+# Status & Zustand prüfen
+sudo systemctl status infobildschirm
+
+# Neu starten (z.B. nach Änderungen)
+sudo systemctl restart infobildschirm
+
+# Dienst stoppen
+sudo systemctl stop infobildschirm
+
+# Dienst starten
+sudo systemctl start infobildschirm
+
+# Live-Logs in Echtzeit ansehen
+sudo journalctl -u infobildschirm -f
+```
+
+---
+
 ## ✨ Features
 
 | Feature | Beschreibung |
