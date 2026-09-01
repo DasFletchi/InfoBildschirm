@@ -5,18 +5,23 @@ Leichtgewichtige Digital-Signage-Software für Schulen – läuft auf Raspberry 
 
 ---
 
-## 🚀 One-Line-Installation
+## 🚀 One-Line-Installation (Empfohlen)
+
+Führe einfach diesen Befehl im Terminal auf deinem Raspberry Pi oder Linux-Server aus:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/DasFletchi/InfoBildschirm/main/install.sh | bash
 ```
 
-Der Installer führt durch die komplette Einrichtung:
-1. System prüfen (Python, Git)
-2. Software installieren
-3. Admin-Passwort & Schulstandort konfigurieren
-4. Systemd-Service einrichten (Autostart)
-5. Optional: Cloudflare Tunnel für Internet-Zugang
+Der interaktive Installer führt dich Schritt für Schritt durch alles:
+1. **Systemprüfung** (Python 3.10+, Linux, Git)
+2. **Installation** nach `/opt/infobildschirm`
+3. **Onboarding**: Admin-Passwort setzen & Schulstandort wählen (*Standard: Göttingen*)
+4. **Autostart**: Systemd-Service `infobildschirm.service` einrichten
+5. **Netzwerk-Wahl**: 
+   - 🏠 Nur lokales Schul-Intranet
+   - 🚀 Cloudflare Quick-Tunnel (1-Klick, sofort https-URL fürs Internet)
+   - 🌐 Cloudflare Fester Tunnel (mit eigener Schul-Domain)
 
 Am Ende bekommt man **zwei Adressen**:
 - 📍 **Intranet**: `http://<LAN-IP>:8080` – im Schul-WLAN erreichbar
@@ -95,9 +100,9 @@ Standard: `http://0.0.0.0:8080`
 | `HOST` | `0.0.0.0` | Bind-Adresse |
 | `PORT` | `8080` | Port |
 | `ADMIN_PASSWORD` | *(leer)* | Passwort für Admin-Bereich |
-| `WEATHER_LAT` | `52.52` | Breitengrad (Wetter) |
-| `WEATHER_LON` | `13.41` | Längengrad (Wetter) |
-| `WEATHER_LOCATION_NAME` | `Schulstandort` | Anzeigename für Wetter |
+| `WEATHER_LAT` | `51.5338` | Breitengrad (Wetter) |
+| `WEATHER_LON` | `9.9355` | Längengrad (Wetter) |
+| `WEATHER_LOCATION_NAME` | `Göttingen` | Anzeigename für Wetter |
 | `MAX_UPLOAD_MB` | `100` | Max. Upload-Größe in MB |
 | `CLEANUP_DAYS` | `30` | Tage bis unbenutzte Dateien gelöscht werden |
 | `CLEANUP_MIN_FREE_MB` | `500` | Speicher-Notbremse (verkürzt auf 7 Tage) |
