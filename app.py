@@ -922,102 +922,99 @@ class InfoHandler(BaseHTTPRequestHandler):
     width: 100vw; height: 100vh; border: 0;
   }
 
-  /* 7-Day Big Fullscreen Weather Slide */
+  /* 7-Day Massive Fullscreen Weather Slide (20-Meter Readable) */
   .slide .weather-container {
     width: 100vw; height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    background: radial-gradient(circle at center, #172554 0%, #0f172a 60%, #020617 100%);
-    box-sizing: border-box; padding: 2rem;
-  }
-  .weather-slide-box {
-    width: 94vw; max-width: 1400px;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 36px; padding: 3rem 4rem;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+    display: flex; flex-direction: column; justify-content: space-between;
+    background: radial-gradient(circle at center, #172554 0%, #0f172a 65%, #020617 100%);
+    box-sizing: border-box; padding: 2.5vh 2.5vw;
     color: #fff;
   }
   .weather-header {
     display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 1.2rem; margin-bottom: 2rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 1.5vh;
   }
   .weather-location {
-    font-size: 2.5rem; font-weight: 700; color: #fff;
-    margin: 0; letter-spacing: 0.5px; text-transform: uppercase;
+    font-size: clamp(3.2rem, 5vw, 6rem); font-weight: 900; color: #fff;
+    margin: 0; letter-spacing: 2px; text-transform: uppercase;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5);
   }
   .weather-tag {
-    background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(59, 130, 246, 0.5);
-    color: #93c5fd; padding: 0.4rem 1.2rem; border-radius: 9999px;
-    font-size: 1.1rem; font-weight: 600; letter-spacing: 1px;
+    background: rgba(59, 130, 246, 0.3); border: 2px solid rgba(59, 130, 246, 0.7);
+    color: #93c5fd; padding: 0.6rem 2rem; border-radius: 9999px;
+    font-size: clamp(1.6rem, 2.2vw, 2.6rem); font-weight: 800; letter-spacing: 1.5px;
   }
   
   .weather-hero {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 3rem; margin-bottom: 2.5rem;
+    gap: 2vw; padding: 1vh 0;
   }
   .hero-left {
-    display: flex; align-items: center; gap: 1.5rem;
+    display: flex; align-items: center; gap: 1.5vw;
   }
   .hero-emoji {
-    font-size: 7.5rem; line-height: 1;
-    filter: drop-shadow(0 10px 25px rgba(0,0,0,0.4));
+    font-size: clamp(7rem, 13vw, 15rem); line-height: 1;
+    filter: drop-shadow(0 15px 35px rgba(0,0,0,0.5));
   }
   .hero-temp-wrap {
     display: flex; align-items: flex-start;
   }
   .hero-temp {
-    font-size: 7.5rem; font-weight: 200; line-height: 1; letter-spacing: -3px;
+    font-size: clamp(8rem, 14vw, 16rem); font-weight: 900; line-height: 0.9; letter-spacing: -4px;
+    text-shadow: 0 10px 40px rgba(0,0,0,0.6);
   }
   .hero-unit {
-    font-size: 3rem; font-weight: 300; color: #93c5fd; margin-top: 0.5rem; margin-left: 0.2rem;
+    font-size: clamp(3.5rem, 5vw, 6rem); font-weight: 700; color: #93c5fd; margin-top: 0.5rem; margin-left: 0.4rem;
   }
   .hero-right {
-    text-align: right;
+    text-align: right; display: flex; flex-direction: column; justify-content: center;
   }
   .hero-desc {
-    font-size: 2.8rem; font-weight: 600; color: #f1f5f9; margin-bottom: 0.8rem;
+    font-size: clamp(3.2rem, 5vw, 6rem); font-weight: 900; color: #f8fafc; margin-bottom: 1.2vh;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.6);
   }
   .hero-meta {
-    display: flex; gap: 1.5rem; justify-content: flex-end;
-    font-size: 1.25rem; color: #94a3b8;
+    display: flex; gap: 2vw; justify-content: flex-end; flex-wrap: wrap;
+    font-size: clamp(1.6rem, 2.2vw, 2.6rem); color: #cbd5e1; font-weight: 700;
   }
   .hero-meta span strong { color: #fff; }
 
-  /* 7-Day Forecast Grid */
+  /* 7-Day Forecast Grid (Huge Bottom Bar) */
   .week-forecast-grid {
     display: grid; grid-template-columns: repeat(7, 1fr);
-    gap: 1rem;
+    gap: 1.2vw; height: 38vh;
   }
   .forecast-card {
-    background: rgba(30, 41, 59, 0.65);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px; padding: 1.4rem 0.5rem;
+    background: rgba(30, 41, 59, 0.85);
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    border-radius: 26px; padding: 2vh 0.6vw;
     text-align: center; display: flex; flex-direction: column;
     align-items: center; justify-content: space-between;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
   }
   .forecast-card.today-card {
-    background: rgba(59, 130, 246, 0.2);
-    border-color: rgba(59, 130, 246, 0.5);
-    box-shadow: 0 0 25px rgba(59, 130, 246, 0.2);
+    background: rgba(37, 99, 235, 0.35);
+    border: 3px solid #3b82f6;
+    box-shadow: 0 0 35px rgba(59, 130, 246, 0.45);
   }
   .f-day {
-    font-size: 1.35rem; font-weight: 700; color: #93c5fd; margin-bottom: 0.4rem;
+    font-size: clamp(1.8rem, 2.6vw, 3.2rem); font-weight: 900; color: #93c5fd;
+    text-transform: uppercase; letter-spacing: 0.5px;
   }
   .forecast-card.today-card .f-day { color: #60a5fa; }
   .f-emoji {
-    font-size: 3.2rem; margin: 0.4rem 0; line-height: 1.1;
+    font-size: clamp(4.2rem, 6.5vw, 7.5rem); margin: 0.5vh 0; line-height: 1;
+    filter: drop-shadow(0 6px 15px rgba(0,0,0,0.3));
   }
   .f-temps {
-    margin-top: 0.5rem;
+    display: flex; align-items: baseline; justify-content: center; gap: 0.4vw;
   }
   .f-max {
-    font-size: 1.6rem; font-weight: 700; color: #fff;
+    font-size: clamp(2.2rem, 3.5vw, 4.2rem); font-weight: 900; color: #fff;
   }
   .f-min {
-    font-size: 1.25rem; color: #94a3b8; margin-left: 0.3rem; font-weight: 400;
+    font-size: clamp(1.6rem, 2.4vw, 3rem); color: #94a3b8; font-weight: 600;
   }
 
   /* Standby Dashboard */
@@ -1126,33 +1123,31 @@ class InfoHandler(BaseHTTPRequestHandler):
     }).join('');
     
     container.innerHTML = `
-      <div class="weather-slide-box">
-        <div class="weather-header">
-          <h1 class="weather-location">${w.location || 'GÖTTINGEN'}</h1>
-          <span class="weather-tag">7-TAGE-WETTER</span>
-        </div>
+      <div class="weather-header">
+        <h1 class="weather-location">${w.location || 'GÖTTINGEN'}</h1>
+        <span class="weather-tag">7-TAGE-WETTER</span>
+      </div>
 
-        <div class="weather-hero">
-          <div class="hero-left">
-            <span class="hero-emoji">${w.emoji || '🌤️'}</span>
-            <div class="hero-temp-wrap">
-              <span class="hero-temp">${w.temperature != null ? Math.round(w.temperature) : '--'}</span>
-              <span class="hero-unit">°C</span>
-            </div>
-          </div>
-          <div class="hero-right">
-            <div class="hero-desc">${w.description || 'Aktuelles Wetter'}</div>
-            <div class="hero-meta">
-              <span>💧 Luftfeuchte: <strong>${w.humidity != null ? w.humidity + '%' : '--'}</strong></span>
-              <span>💨 Wind: <strong>${w.wind_speed != null ? Math.round(w.wind_speed) + ' km/h' : '--'}</strong></span>
-              <span>🌡️ Heute: <strong>${w.today_min != null ? Math.round(w.today_min) + '°' : '--'} / ${w.today_max != null ? Math.round(w.today_max) + '°' : '--'}</strong></span>
-            </div>
+      <div class="weather-hero">
+        <div class="hero-left">
+          <span class="hero-emoji">${w.emoji || '🌤️'}</span>
+          <div class="hero-temp-wrap">
+            <span class="hero-temp">${w.temperature != null ? Math.round(w.temperature) : '--'}</span>
+            <span class="hero-unit">°C</span>
           </div>
         </div>
-
-        <div class="week-forecast-grid">
-          ${forecastHtml}
+        <div class="hero-right">
+          <div class="hero-desc">${w.description || 'Aktuelles Wetter'}</div>
+          <div class="hero-meta">
+            <span>💧 Feuchte: <strong>${w.humidity != null ? w.humidity + '%' : '--'}</strong></span>
+            <span>💨 Wind: <strong>${w.wind_speed != null ? Math.round(w.wind_speed) + ' km/h' : '--'}</strong></span>
+            <span>🌡️ Heute: <strong>${w.today_min != null ? Math.round(w.today_min) + '°' : '--'} / ${w.today_max != null ? Math.round(w.today_max) + '°' : '--'}</strong></span>
+          </div>
         </div>
+      </div>
+
+      <div class="week-forecast-grid">
+        ${forecastHtml}
       </div>
     `;
     return container;
