@@ -46,7 +46,7 @@ CLEANUP_INTERVAL_SECONDS = 3600  # 1 hour
 
 WEATHER_LAT = os.getenv("WEATHER_LAT", "52.52")
 WEATHER_LON = os.getenv("WEATHER_LON", "13.41")
-WEATHER_LOCATION = os.getenv("WEATHER_LOCATION_NAME", "Schulstandort")
+WEATHER_LOCATION = os.getenv("WEATHER_LOCATION_NAME") or os.getenv("WEATHER_CITY") or "Schulstandort"
 WEATHER_CACHE_SECONDS = 900  # 15 minutes
 
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".mp4", ".webm"}

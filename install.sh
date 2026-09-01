@@ -455,6 +455,7 @@ ADMIN_PASSWORD=${ADMIN_PASSWORD}
 
 # Wetter-Widget
 WEATHER_CITY=${WEATHER_CITY}
+WEATHER_LOCATION_NAME=${WEATHER_CITY}
 WEATHER_LAT=${WEATHER_LAT}
 WEATHER_LON=${WEATHER_LON}
 
@@ -509,23 +510,28 @@ success "Service aktiviert (startet beim Boot)."
 sudo systemctl restart "${SERVICE_NAME}"
 success "Service gestartet."
 
-# ─── Schritt 5/5: Cloudflare Tunnel (optional) ───────────────────────────────
+# ─── Schritt 5/5: Erreichbarkeit & Internet-Zugriff ─────────────────────────
 
-step "5/5" "Cloudflare Tunnel (optional)"
+step "5/5" "Erreichbarkeit & Internet-Zugriff"
 
-echo -e "  ${DIM}Ein Cloudflare-Tunnel macht den Bildschirm auch außerhalb${RESET}"
-echo -e "  ${DIM}des Schulnetzwerks erreichbar (z.B. von zu Hause).${RESET}"
+echo -e "  ${DIM}Wähle, wie auf den InfoBildschirm zugegriffen werden soll:${RESET}"
 echo ""
+echo "    1) 🏠 Nur im Schul-Intranet (oder eigenes Router-Portforwarding)"
+echo "       ${DIM}→ Keine Zusatztools nötig, sofort startklar${RESET}"
+echo ""
+echo "    2) 🚀 Cloudflare Quick-Tunnel (1-Klick, kostenlos, kein Account nötig)"
+echo "       ${DIM}→ Erstellt sofort eine https://*.trycloudflare.com Internet-URL${RESET}"
+echo "       ${DIM}→ Kein Router-Portforwarding nötig (ideal für Zugriff von zu Hause)${RESET}"
+echo ""
+echo "    3) 🌐 Cloudflare Fester Tunnel (eigene Domain & Cloudflare-Account)"
+echo "       ${DIM}→ Feste Schul-Domain (z.B. https://info.schule.de), permanente Anbindung${RESET}"
+echo "       ${DIM}→ Kein Router-Portforwarding nötig${RESET}"
+echo ""
+read -rp "  → Auswahl [1]: " ACCESS_CHOICE
+ACCESS_CHOICE="${ACCESS_CHOICE:-1}"
 
-if confirm "Soll der Bildschirm auch über das Internet erreichbar sein? (z.B. von zu Hause)"; then
-    echo ""
-    echo "  Tunnel-Variante wählen:"
-    echo ""
-    echo "    1) ${BOLD}Quick Tunnel${RESET} ${DIM}(kein Account nötig, URL ändert sich bei Neustart)${RESET}"
-    echo "    2) ${BOLD}Persistenter Tunnel${RESET} ${DIM}(Cloudflare-Account nötig, feste URL)${RESET}"
-    echo ""
-    read -rp "  → Auswahl [1]: " TUNNEL_CHOICE
-    TUNNEL_CHOICE="${TUNNEL_CHOICE:-1}"
+if [[ "$ACCESS_CHOICE" == "2" || "$ACCESS_CHOICE" == "3" ]]; then
+    TUNNEL_CHOICE=$((ACCESS_CHOICE - 1))
 
     # ── cloudflared installieren ──
     install_cloudflared() {
