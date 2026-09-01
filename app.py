@@ -44,9 +44,9 @@ CLEANUP_DAYS = int(os.getenv("CLEANUP_DAYS", "30"))
 CLEANUP_MIN_FREE_MB = int(os.getenv("CLEANUP_MIN_FREE_MB", "500"))
 CLEANUP_INTERVAL_SECONDS = 3600  # 1 hour
 
-WEATHER_LAT = os.getenv("WEATHER_LAT", "52.52")
-WEATHER_LON = os.getenv("WEATHER_LON", "13.41")
-WEATHER_LOCATION = os.getenv("WEATHER_LOCATION_NAME") or os.getenv("WEATHER_CITY") or "Schulstandort"
+WEATHER_LAT = os.getenv("WEATHER_LAT", "51.5338")
+WEATHER_LON = os.getenv("WEATHER_LON", "9.9355")
+WEATHER_LOCATION = os.getenv("WEATHER_LOCATION_NAME") or os.getenv("WEATHER_CITY") or "Göttingen"
 WEATHER_CACHE_SECONDS = 900  # 15 minutes
 
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".mp4", ".webm"}
@@ -292,7 +292,7 @@ class WeatherCache:
             f"latitude={WEATHER_LAT}&longitude={WEATHER_LON}"
             f"&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m"
             f"&daily=weather_code,temperature_2m_max,temperature_2m_min"
-            f"&timezone=auto&forecast_days=2"
+            f"&timezone=auto&forecast_days=7"
         )
         try:
             req = Request(url, headers={"User-Agent": "InfoBildschirm/2.0"})
@@ -304,6 +304,24 @@ class WeatherCache:
             code = int(current.get("weather_code", 0))
             desc, emoji = WMO_CODES.get(code, ("Unbekannt", "❓"))
 
+            dates = daily.get("time", [])
+            codes = daily.get("weather_code", [])
+            max_temps = daily.get("temperature_2m_max", [])
+            min_temps = daily.get("temperature_2m_min", [])
+
+            forecast_days = []
+            for i in range(len(dates)):
+                d_code = int(codes[i]) if i < len(codes) else 0
+                d_desc, d_emoji = WMO_CODES.get(d_code, ("Unbekannt", "❓"))
+                forecast_days.append({
+                    "date": dates[i],
+                    "code": d_code,
+                    "desc": d_desc,
+                    "emoji": d_emoji,
+                    "max": max_temps[i] if i < len(max_temps) else None,
+                    "min": min_temps[i] if i < len(min_temps) else None,
+                })
+
             return {
                 "location": WEATHER_LOCATION,
                 "temperature": current.get("temperature_2m"),
@@ -312,11 +330,9 @@ class WeatherCache:
                 "weather_code": code,
                 "description": desc,
                 "emoji": emoji,
-                "today_min": daily.get("temperature_2m_min", [None])[0],
-                "today_max": daily.get("temperature_2m_max", [None])[0],
-                "tomorrow_min": daily.get("temperature_2m_min", [None, None])[1] if len(daily.get("temperature_2m_min", [])) > 1 else None,
-                "tomorrow_max": daily.get("temperature_2m_max", [None, None])[1] if len(daily.get("temperature_2m_max", [])) > 1 else None,
-                "tomorrow_code": daily.get("weather_code", [None, None])[1] if len(daily.get("weather_code", [])) > 1 else None,
+                "forecast": forecast_days,
+                "today_min": min_temps[0] if min_temps else None,
+                "today_max": max_temps[0] if max_temps else None,
                 "ok": True,
             }
         except Exception as exc:
@@ -871,13 +887,6 @@ class InfoHandler(BaseHTTPRequestHandler):
 <div id="display-wrap">
   <div id="slide-a" class="slide"></div>
   <div id="slide-b" class="slide"></div>
-  <div id="clock-pill">
-    <span id="pill-time">--:--</span>
-    <span class="pill-dot">·</span>
-    <span id="pill-date">--</span>
-    <span class="pill-dot">·</span>
-    <span id="pill-weather">🌡️ --°C</span>
-  </div>
   <div id="start-hint">Drücke <kbd>F11</kbd> für Vollbild</div>
 </div>
 <style>
@@ -913,36 +922,103 @@ class InfoHandler(BaseHTTPRequestHandler):
     width: 100vw; height: 100vh; border: 0;
   }
 
-  /* Weather Slide */
+  /* 7-Day Big Fullscreen Weather Slide */
   .slide .weather-container {
     width: 100vw; height: 100vh;
     display: flex; align-items: center; justify-content: center;
-    background: radial-gradient(circle at center, #1e293b 0%, #0f172a 70%, #020617 100%);
+    background: radial-gradient(circle at center, #172554 0%, #0f172a 60%, #020617 100%);
+    box-sizing: border-box; padding: 2rem;
   }
-  .weather-card {
-    background: rgba(30, 41, 59, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+  .weather-slide-box {
+    width: 94vw; max-width: 1400px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 32px; padding: 3.5rem 5rem; text-align: center;
-    color: #fff; min-width: 550px; max-width: 800px;
-    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+    border-radius: 36px; padding: 3rem 4rem;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+    color: #fff;
   }
-  .weather-card .location { font-size: 1.4rem; color: #94a3b8; letter-spacing: 1px; margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600; }
-  .weather-card .emoji { font-size: 6.5rem; margin: 0.5rem 0; line-height: 1; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3)); }
-  .weather-card .temp { font-size: 6.5rem; font-weight: 200; margin: 0; letter-spacing: -2px; }
-  .weather-card .desc { font-size: 1.8rem; color: #cbd5e1; margin-bottom: 1.5rem; font-weight: 400; }
-  .weather-card .details {
-    display: flex; justify-content: center; gap: 2.5rem;
-    font-size: 1.25rem; color: #94a3b8; margin-top: 1.5rem;
+  .weather-header {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1.2rem; margin-bottom: 2rem;
   }
-  .weather-card .forecast {
-    display: flex; justify-content: center; gap: 4rem;
-    margin-top: 2rem; padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  .weather-location {
+    font-size: 2.5rem; font-weight: 700; color: #fff;
+    margin: 0; letter-spacing: 0.5px; text-transform: uppercase;
   }
-  .weather-card .forecast .label { font-size: 1rem; color: #94a3b8; margin-bottom: 0.3rem; }
-  .weather-card .forecast .val { font-size: 1.5rem; font-weight: 300; }
+  .weather-tag {
+    background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(59, 130, 246, 0.5);
+    color: #93c5fd; padding: 0.4rem 1.2rem; border-radius: 9999px;
+    font-size: 1.1rem; font-weight: 600; letter-spacing: 1px;
+  }
+  
+  .weather-hero {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 3rem; margin-bottom: 2.5rem;
+  }
+  .hero-left {
+    display: flex; align-items: center; gap: 1.5rem;
+  }
+  .hero-emoji {
+    font-size: 7.5rem; line-height: 1;
+    filter: drop-shadow(0 10px 25px rgba(0,0,0,0.4));
+  }
+  .hero-temp-wrap {
+    display: flex; align-items: flex-start;
+  }
+  .hero-temp {
+    font-size: 7.5rem; font-weight: 200; line-height: 1; letter-spacing: -3px;
+  }
+  .hero-unit {
+    font-size: 3rem; font-weight: 300; color: #93c5fd; margin-top: 0.5rem; margin-left: 0.2rem;
+  }
+  .hero-right {
+    text-align: right;
+  }
+  .hero-desc {
+    font-size: 2.8rem; font-weight: 600; color: #f1f5f9; margin-bottom: 0.8rem;
+  }
+  .hero-meta {
+    display: flex; gap: 1.5rem; justify-content: flex-end;
+    font-size: 1.25rem; color: #94a3b8;
+  }
+  .hero-meta span strong { color: #fff; }
+
+  /* 7-Day Forecast Grid */
+  .week-forecast-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 1rem;
+  }
+  .forecast-card {
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px; padding: 1.4rem 0.5rem;
+    text-align: center; display: flex; flex-direction: column;
+    align-items: center; justify-content: space-between;
+  }
+  .forecast-card.today-card {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.2);
+  }
+  .f-day {
+    font-size: 1.35rem; font-weight: 700; color: #93c5fd; margin-bottom: 0.4rem;
+  }
+  .forecast-card.today-card .f-day { color: #60a5fa; }
+  .f-emoji {
+    font-size: 3.2rem; margin: 0.4rem 0; line-height: 1.1;
+  }
+  .f-temps {
+    margin-top: 0.5rem;
+  }
+  .f-max {
+    font-size: 1.6rem; font-weight: 700; color: #fff;
+  }
+  .f-min {
+    font-size: 1.25rem; color: #94a3b8; margin-left: 0.3rem; font-weight: 400;
+  }
 
   /* Standby Dashboard */
   .standby-wrap {
@@ -952,50 +1028,32 @@ class InfoHandler(BaseHTTPRequestHandler):
     color: #fff; text-align: center; padding: 2rem; box-sizing: border-box;
   }
   .standby-clock {
-    font-size: 7.5rem; font-weight: 200; letter-spacing: -2px;
+    font-size: 8rem; font-weight: 200; letter-spacing: -2px;
     margin: 0; line-height: 1;
-    text-shadow: 0 0 40px rgba(59, 130, 246, 0.4);
+    text-shadow: 0 0 50px rgba(59, 130, 246, 0.4);
   }
   .standby-date {
-    font-size: 2.4rem; color: #93c5fd; font-weight: 300;
-    margin: 1rem 0 2.5rem 0; letter-spacing: 0.5px;
+    font-size: 2.6rem; color: #93c5fd; font-weight: 300;
+    margin: 1.2rem 0 2.8rem 0; letter-spacing: 0.5px;
   }
   .standby-weather-box {
-    background: rgba(15, 23, 42, 0.65);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px; padding: 1.5rem 3rem;
-    display: inline-flex; align-items: center; gap: 2rem;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 28px; padding: 1.8rem 3.5rem;
+    display: inline-flex; align-items: center; gap: 2.5rem;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.5);
   }
   .standby-badge {
-    margin-top: 2.5rem; display: inline-flex; align-items: center; gap: 0.5rem;
-    background: rgba(255,255,255,0.06); padding: 0.5rem 1.2rem;
-    border-radius: 9999px; font-size: 0.95rem; color: #94a3b8;
+    margin-top: 2.8rem; display: inline-flex; align-items: center; gap: 0.6rem;
+    background: rgba(255,255,255,0.06); padding: 0.6rem 1.4rem;
+    border-radius: 9999px; font-size: 1rem; color: #94a3b8;
   }
   .pulse-dot {
-    width: 9px; height: 9px; background: #10b981; border-radius: 50%;
-    box-shadow: 0 0 10px #10b981; animation: pulse 2s infinite;
+    width: 10px; height: 10px; background: #10b981; border-radius: 50%;
+    box-shadow: 0 0 12px #10b981; animation: pulse 2s infinite;
   }
   @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
-
-  /* Floating Clock & Weather Pill Overlay */
-  #clock-pill {
-    position: fixed; top: 1.5rem; right: 1.8rem; z-index: 100;
-    background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 9999px;
-    padding: 0.5rem 1.4rem;
-    font-size: 1.15rem; color: #fff; font-weight: 400;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-    pointer-events: none;
-    display: flex; align-items: center; gap: 0.6rem;
-    transition: opacity 0.5s;
-  }
-  #clock-pill.hidden { opacity: 0; }
-  .pill-dot { color: rgba(255, 255, 255, 0.3); }
 
   #start-hint {
     position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 200;
@@ -1010,10 +1068,6 @@ class InfoHandler(BaseHTTPRequestHandler):
 (function() {
   const slideA = document.getElementById('slide-a');
   const slideB = document.getElementById('slide-b');
-  const pillTime = document.getElementById('pill-time');
-  const pillDate = document.getElementById('pill-date');
-  const pillWeather = document.getElementById('pill-weather');
-  const clockPill = document.getElementById('clock-pill');
   const hintEl = document.getElementById('start-hint');
 
   let items = [];
@@ -1024,24 +1078,12 @@ class InfoHandler(BaseHTTPRequestHandler):
 
   setTimeout(() => hintEl.classList.add('hidden'), 5000);
 
-  function updateClock() {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
-    const dateStr = now.toLocaleDateString('de-DE', {weekday:'short', day:'numeric', month:'short'});
-    pillTime.textContent = timeStr;
-    pillDate.textContent = dateStr;
-  }
-  updateClock();
-  setInterval(updateClock, 1000);
-
   async function refreshWeather() {
     try {
       const r = await fetch('/api/weather', {cache:'no-store'});
       const data = await r.json();
       if (data.ok) {
         latestWeather = data;
-        const temp = data.temperature != null ? Math.round(data.temperature) + '°C' : '--';
-        pillWeather.textContent = `${data.emoji || '🌤️'} ${temp}`;
       }
     } catch(e) {}
   }
@@ -1059,30 +1101,57 @@ class InfoHandler(BaseHTTPRequestHandler):
   function createWeatherCard(w) {
     const container = document.createElement('div');
     container.className = 'weather-container';
-    const wmo = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',
-      51:'🌦️',53:'🌦️',55:'🌦️',61:'🌧️',63:'🌧️',65:'🌧️',
-      71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'🌧️',95:'⛈️',96:'⛈️',99:'⛈️'};
-    const tmrwEmoji = w.tomorrow_code != null ? (wmo[w.tomorrow_code] || '❓') : '';
+    
+    const days = w.forecast || [];
+    const forecastHtml = days.map((day, dIdx) => {
+      let dayName = 'Heute';
+      if (dIdx === 1) dayName = 'Morgen';
+      else if (dIdx > 1 && day.date) {
+        const d = new Date(day.date + 'T12:00:00');
+        dayName = d.toLocaleDateString('de-DE', { weekday: 'short' });
+      }
+      const minT = day.min != null ? Math.round(day.min) + '°' : '--';
+      const maxT = day.max != null ? Math.round(day.max) + '°' : '--';
+      const isToday = dIdx === 0 ? ' today-card' : '';
+      return `
+        <div class="forecast-card${isToday}">
+          <div class="f-day">${dayName}</div>
+          <div class="f-emoji">${day.emoji || '🌤️'}</div>
+          <div class="f-temps">
+            <span class="f-max">${maxT}</span>
+            <span class="f-min">${minT}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
     
     container.innerHTML = `
-      <div class="weather-card">
-        <div class="location">${w.location || 'Wetter'}</div>
-        <div class="emoji">${w.emoji || '🌡️'}</div>
-        <div class="temp">${w.temperature != null ? Math.round(w.temperature) + '°C' : '--'}</div>
-        <div class="desc">${w.description || ''}</div>
-        <div class="details">
-          <span>💧 ${w.humidity != null ? w.humidity + '%' : '--'} Feuchtigkeit</span>
-          <span>💨 ${w.wind_speed != null ? Math.round(w.wind_speed) + ' km/h' : '--'} Wind</span>
+      <div class="weather-slide-box">
+        <div class="weather-header">
+          <h1 class="weather-location">${w.location || 'GÖTTINGEN'}</h1>
+          <span class="weather-tag">7-TAGE-WETTER</span>
         </div>
-        <div class="forecast">
-          <div>
-            <div class="label">Heute</div>
-            <div class="val">${w.today_min != null ? Math.round(w.today_min) + '°' : '--'} / ${w.today_max != null ? Math.round(w.today_max) + '°' : '--'}</div>
+
+        <div class="weather-hero">
+          <div class="hero-left">
+            <span class="hero-emoji">${w.emoji || '🌤️'}</span>
+            <div class="hero-temp-wrap">
+              <span class="hero-temp">${w.temperature != null ? Math.round(w.temperature) : '--'}</span>
+              <span class="hero-unit">°C</span>
+            </div>
           </div>
-          <div>
-            <div class="label">Morgen ${tmrwEmoji}</div>
-            <div class="val">${w.tomorrow_min != null ? Math.round(w.tomorrow_min) + '°' : '--'} / ${w.tomorrow_max != null ? Math.round(w.tomorrow_max) + '°' : '--'}</div>
+          <div class="hero-right">
+            <div class="hero-desc">${w.description || 'Aktuelles Wetter'}</div>
+            <div class="hero-meta">
+              <span>💧 Luftfeuchte: <strong>${w.humidity != null ? w.humidity + '%' : '--'}</strong></span>
+              <span>💨 Wind: <strong>${w.wind_speed != null ? Math.round(w.wind_speed) + ' km/h' : '--'}</strong></span>
+              <span>🌡️ Heute: <strong>${w.today_min != null ? Math.round(w.today_min) + '°' : '--'} / ${w.today_max != null ? Math.round(w.today_max) + '°' : '--'}</strong></span>
+            </div>
           </div>
+        </div>
+
+        <div class="week-forecast-grid">
+          ${forecastHtml}
         </div>
       </div>
     `;
@@ -1100,12 +1169,12 @@ class InfoHandler(BaseHTTPRequestHandler):
     if (latestWeather && latestWeather.ok) {
       weatherHtml = `
         <div class="standby-weather-box">
-          <div style="font-size:3.5rem">${latestWeather.emoji || '🌤️'}</div>
+          <div style="font-size:4rem">${latestWeather.emoji || '🌤️'}</div>
           <div style="text-align:left">
-            <div style="font-size:2.2rem;font-weight:200">${Math.round(latestWeather.temperature)}°C</div>
-            <div style="color:#94a3b8;font-size:1.1rem">${latestWeather.description || ''} · ${latestWeather.location || ''}</div>
+            <div style="font-size:2.6rem;font-weight:200">${Math.round(latestWeather.temperature)}°C</div>
+            <div style="color:#94a3b8;font-size:1.2rem">${latestWeather.description || ''} · ${latestWeather.location || ''}</div>
           </div>
-          <div style="border-left:1px solid rgba(255,255,255,0.1);padding-left:1.5rem;text-align:left;color:#94a3b8;font-size:0.95rem">
+          <div style="border-left:1px solid rgba(255,255,255,0.12);padding-left:2rem;text-align:left;color:#94a3b8;font-size:1.05rem">
             <div>Heute: ${Math.round(latestWeather.today_min || 0)}° / ${Math.round(latestWeather.today_max || 0)}°</div>
             <div>Wind: ${Math.round(latestWeather.wind_speed || 0)} km/h</div>
           </div>
@@ -1139,13 +1208,11 @@ class InfoHandler(BaseHTTPRequestHandler):
     await loadPlaylist();
 
     if (!items.length) {
-      clockPill.classList.add('hidden');
       transition(createStandbyScreen());
       advanceTimer = setTimeout(advance, 3000);
       return;
     }
 
-    clockPill.classList.remove('hidden');
     const item = items[idx % items.length];
     idx++;
     let duration = (item.duration_seconds || 15) * 1000;

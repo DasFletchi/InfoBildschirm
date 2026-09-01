@@ -356,12 +356,12 @@ done
 # Wetter-Standort
 echo ""
 info "Standort für das Wetter-Widget."
-echo -e "  ${DIM}Standard: Berlin (52.52°N, 13.41°E)${RESET}"
+echo -e "  ${DIM}Standard: Göttingen (51.53°N, 9.94°E)${RESET}"
 echo ""
 
-WEATHER_LAT="52.52"
-WEATHER_LON="13.41"
-WEATHER_CITY="Berlin"
+WEATHER_LAT="51.5338"
+WEATHER_LON="9.9355"
+WEATHER_CITY="Göttingen"
 
 if confirm "Anderen Standort wählen?"; then
     while true; do
