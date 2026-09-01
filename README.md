@@ -187,6 +187,16 @@ EOF
 
 ---
 
+## 🗑️ Deinstallation (One-Liner)
+
+Falls du InfoBildschirm und alle zugehörigen Dienste restlos vom System entfernen möchtest:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/DasFletchi/InfoBildschirm/main/uninstall.sh | bash
+```
+
+---
+
 ## 🧪 Tests
 
 ```bash
@@ -201,6 +211,7 @@ python3 -m unittest -v
 InfoBildschirm/
 ├── app.py              # Server (alles in einer Datei, keine Dependencies)
 ├── install.sh          # One-Line-Installer mit Onboarding
+├── uninstall.sh        # One-Line-Deinstaller
 ├── test_app.py         # Tests
 ├── data/               # SQLite-DB + Cleanup-Log (gitignored)
 ├── media/              # Hochgeladene Dateien (gitignored)
