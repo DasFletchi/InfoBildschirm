@@ -13,6 +13,11 @@
 # ──────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
+# Wenn über Pipe ausgeführt (curl | bash), Terminal für Tastatureingaben (/dev/tty) nutzen
+if [[ ! -t 0 ]] && [[ -e /dev/tty ]]; then
+    exec < /dev/tty
+fi
+
 # ─── Farben & Formatierung ───────────────────────────────────────────────────
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -817,9 +822,10 @@ printf "╝${RESET}\n"
 
 echo ""
 echo -e "  ${DIM}Nützliche Befehle:${RESET}"
+echo -e "  ${DIM}  Starten:    sudo systemctl start ${SERVICE_NAME}${RESET}"
+echo -e "  ${DIM}  Stoppen:    sudo systemctl stop ${SERVICE_NAME}${RESET}"
+echo -e "  ${DIM}  Neustart:   sudo systemctl restart ${SERVICE_NAME}${RESET}"
 echo -e "  ${DIM}  Status:     sudo systemctl status ${SERVICE_NAME}${RESET}"
 echo -e "  ${DIM}  Logs:       sudo journalctl -u ${SERVICE_NAME} -f${RESET}"
-echo -e "  ${DIM}  Neustart:   sudo systemctl restart ${SERVICE_NAME}${RESET}"
-echo -e "  ${DIM}  Stoppen:    sudo systemctl stop ${SERVICE_NAME}${RESET}"
-echo -e "  ${DIM}  Entfernen:  bash ${INSTALL_DIR}/install.sh --uninstall${RESET}"
+echo -e "  ${DIM}  Entfernen:  curl -sSL https://raw.githubusercontent.com/DasFletchi/InfoBildschirm/main/uninstall.sh | bash${RESET}"
 echo ""
