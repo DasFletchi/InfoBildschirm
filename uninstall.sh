@@ -53,11 +53,11 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo ""
-echo -e "${RED}┌──────────────────────────────────────────┐${RESET}"
-echo -e "${RED}│${RESET}  🗑️  ${BOLD}InfoBildschirm – Kompletter Reset${RESET}   ${RED}│${RESET}"
-echo -e "${RED}└──────────────────────────────────────────┘${RESET}"
-echo ""
+clear
+echo -e ""
+echo -e "  ${RED}${BOLD}InfoBildschirm${RESET} ${DIM}Kompletter Reset${RESET}"
+echo -e "  ──────────────────────────────────────"
+echo -e ""
 
 echo -e "  ${YELLOW}ℹ${RESET} Dieses Skript benötigt Administratorrechte (sudo)."
 # sudo-Timestamp aktualisieren, damit spätere sudo-Befehle (die stderr nach /dev/null umleiten) nicht unsichtbar hängen!
@@ -76,7 +76,8 @@ fi
 echo ""
 
 if ! $FORCE; then
-    read_tty -rp "  → Wirklich alles restlos löschen & zurücksetzen? [j/N]: " CONFIRM
+    echo -en "  ${CYAN}?${RESET}  Wirklich alles restlos löschen & zurücksetzen? ${DIM}[j/N]${RESET} "
+    read_tty CONFIRM
     if [[ "${CONFIRM,,}" != "j" && "${CONFIRM,,}" != "ja" && "${CONFIRM,,}" != "y" && "${CONFIRM,,}" != "yes" ]]; then
         echo -e "  ${BLUE}ℹ${RESET}  Deinstallation abgebrochen."
         exit 0
@@ -161,8 +162,7 @@ if [[ -f "${CURRENT_DIR}/app.py" ]]; then
     echo -e "  ${GREEN}✔${RESET}  Lokale Konfigurationen, Datenbank & Medien zurückgesetzt."
 fi
 
-echo ""
-echo -e "${GREEN}┌──────────────────────────────────────────────────────────┐${RESET}"
-echo -e "${GREEN}│  ✅ InfoBildschirm wurde komplett zurückgesetzt!        │${RESET}"
-echo -e "${GREEN}└──────────────────────────────────────────────────────────┘${RESET}"
+echo -e "  ${GREEN}──────────────────────────────────────────────────────────${RESET}"
+echo -e "  ${GREEN}${BOLD}✅  InfoBildschirm wurde komplett zurückgesetzt!${RESET}"
+echo -e "  ${GREEN}──────────────────────────────────────────────────────────${RESET}"
 echo ""

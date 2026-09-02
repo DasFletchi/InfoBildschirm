@@ -816,47 +816,27 @@ fi
 
 LOCAL_URL="http://${LAN_IP}:${PORT}"
 
-# Breite der Box berechnen
-BOX_WIDTH=50
+echo -e "  ${GREEN}${BOLD}✨  InfoBildschirm ist bereit!${RESET}"
+echo -e "  ${GREEN}──────────────────────────────────────────────────${RESET}"
+echo -e ""
+echo -e "  ${CYAN}🏠  Intranet (Schul-WLAN):${RESET}"
+echo -e "      ${BOLD}${LOCAL_URL}${RESET}"
+echo -e ""
 
-print_padded() {
-    local content="$1"
-    # Sichtbare Zeichenlänge (ANSI-Codes entfernen)
-    local visible
-    visible=$(echo -e "$content" | sed 's/\x1b\[[0-9;]*m//g')
-    local visible_len=${#visible}
-    local padding=$((BOX_WIDTH - 2 - visible_len))
-    if (( padding < 0 )); then padding=0; fi
-    printf "║ %s%*s ║\n" "$content" "$padding" ""
-}
-
-# Box oben
-printf "${GREEN}╔"
-printf '═%.0s' $(seq 1 $BOX_WIDTH)
-printf "╗${RESET}\n"
-
-print_padded ""
-print_padded "✅ InfoBildschirm ist bereit!"
-print_padded ""
-print_padded "📍 Intranet (Schul-WLAN):"
-print_padded "   ${LOCAL_URL}"
-print_padded ""
-
-if [[ -n "$TUNNEL_URL" ]]; then
-    print_padded "🌐 Internet (von überall):"
-    print_padded "   ${TUNNEL_URL}"
-    print_padded ""
+if [[ -n "$TUNNEL_URL" && "$TUNNEL_URL" != "(wird beim Start angezeigt – siehe journalctl)" ]]; then
+    echo -e "  ${CYAN}🌐  Internet (von überall):${RESET}"
+    echo -e "      ${BOLD}${TUNNEL_URL}${RESET}"
+    echo -e ""
+elif [[ -n "$TUNNEL_URL" ]]; then
+    echo -e "  ${CYAN}🌐  Internet (Tunnel läuft im Hintergrund):${RESET}"
+    echo -e "      ${DIM}URL mit 'sudo journalctl -u ${CF_SERVICE_NAME} -f' prüfen${RESET}"
+    echo -e ""
 fi
 
-print_padded "🔧 Verwaltung: .../manage"
-print_padded "📺 Anzeige:    .../display"
-print_padded ""
-
-# Box unten
-printf "${GREEN}╚"
-printf '═%.0s' $(seq 1 $BOX_WIDTH)
-printf "╝${RESET}\n"
-
+echo -e "  ${CYAN}⚙️   Verwaltung:${RESET}  ${LOCAL_URL}/manage"
+echo -e "  ${CYAN}📺  Anzeige:${RESET}     ${LOCAL_URL}/display"
+echo -e ""
+echo -e "  ${GREEN}──────────────────────────────────────────────────${RESET}"
 echo ""
 echo -e "  ${DIM}Nützliche Befehle:${RESET}"
 echo -e "  ${DIM}  Starten:    sudo systemctl start ${SERVICE_NAME}${RESET}"
