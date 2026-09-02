@@ -13,11 +13,6 @@
 # ──────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-# Wenn über Pipe ausgeführt (curl | bash), Terminal für Tastatureingaben (/dev/tty) nutzen
-if [[ ! -t 0 ]] && [[ -e /dev/tty ]]; then
-    exec < /dev/tty
-fi
-
 # ─── Farben & Formatierung ───────────────────────────────────────────────────
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -27,6 +22,14 @@ CYAN='\033[0;36m'
 BOLD='\033[1m'
 DIM='\033[2m'
 RESET='\033[0m'
+
+read_tty() {
+    if [[ -e /dev/tty ]]; then
+        read "$@" < /dev/tty
+    else
+        read "$@"
+    fi
+}
 
 # ─── Globale Variablen ───────────────────────────────────────────────────────
 INSTALL_DIR="/opt/infobildschirm"
@@ -66,10 +69,10 @@ ask() {
     local var_name="$3"
     local input
     if [[ -n "$default" ]]; then
-        read -rp "  → ${prompt} [${default}]: " input
+        read_tty -rp "  → ${prompt} [${default}]: " input
         eval "$var_name=\"${input:-$default}\""
     else
-        read -rp "  → ${prompt}: " input
+        read_tty -rp "  → ${prompt}: " input
         eval "$var_name=\"${input}\""
     fi
 }
@@ -78,7 +81,7 @@ ask() {
 confirm() {
     local prompt="$1"
     local answer
-    read -rp "  → ${prompt} [j/N]: " answer
+    read_tty -rp "  → ${prompt} [j/N]: " answer
     [[ "${answer,,}" == "j" || "${answer,,}" == "ja" || "${answer,,}" == "y" || "${answer,,}" == "yes" ]]
 }
 
@@ -86,7 +89,7 @@ confirm() {
 confirm_yes() {
     local prompt="$1"
     local answer
-    read -rp "  → ${prompt} [J/n]: " answer
+    read_tty -rp "  → ${prompt} [J/n]: " answer
     [[ "${answer,,}" != "n" && "${answer,,}" != "nein" && "${answer,,}" != "no" ]]
 }
 
@@ -286,7 +289,7 @@ if [[ -d "${INSTALL_DIR}/.git" ]]; then
     echo "    2) Neu installieren (Verzeichnis löschen & neu klonen)"
     echo "    3) Abbrechen"
     echo ""
-    read -rp "  → Auswahl [1]: " CHOICE
+    read_tty -rp "  → Auswahl [1]: " CHOICE
     CHOICE="${CHOICE:-1}"
 
     case "$CHOICE" in
@@ -364,14 +367,14 @@ echo ""
 info "Admin-Passwort für die Verwaltungsoberfläche festlegen."
 while true; do
     echo -n "  → Admin-Passwort: "
-    read -rs ADMIN_PASSWORD
+    read_tty -rs ADMIN_PASSWORD
     echo ""
     if [[ -z "$ADMIN_PASSWORD" ]]; then
         warn "Passwort darf nicht leer sein."
         continue
     fi
     echo -n "  → Passwort bestätigen: "
-    read -rs ADMIN_PASSWORD_CONFIRM
+    read_tty -rs ADMIN_PASSWORD_CONFIRM
     echo ""
     if [[ "$ADMIN_PASSWORD" == "$ADMIN_PASSWORD_CONFIRM" ]]; then
         success "Passwort gesetzt."
@@ -555,7 +558,7 @@ echo "    3) 🌐 Cloudflare Fester Tunnel (eigene Domain & Cloudflare-Account)"
 echo "       ${DIM}→ Feste Schul-Domain (z.B. https://info.schule.de), permanente Anbindung${RESET}"
 echo "       ${DIM}→ Kein Router-Portforwarding nötig${RESET}"
 echo ""
-read -rp "  → Auswahl [1]: " ACCESS_CHOICE
+read_tty -rp "  → Auswahl [1]: " ACCESS_CHOICE
 ACCESS_CHOICE="${ACCESS_CHOICE:-1}"
 
 if [[ "$ACCESS_CHOICE" == "2" || "$ACCESS_CHOICE" == "3" ]]; then
