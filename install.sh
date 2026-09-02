@@ -89,19 +89,27 @@ confirm_yes() {
 
 do_uninstall() {
     banner
-    step "🗑️" "Deinstallation"
+    step "🗑️" "Deinstallation & Reset"
 
-    warn "Folgendes wird entfernt:"
+    warn "Folgendes wird vollständig entfernt:"
+    echo "     - Alle laufenden Server-Prozesse (Port 8080)"
     echo "     - Systemd-Service: ${SERVICE_NAME}"
     echo "     - Systemd-Service: ${CF_SERVICE_NAME} (falls vorhanden)"
-    echo "     - Installationsverzeichnis: ${INSTALL_DIR}"
+    echo "     - Installationsverzeichnis & Konfiguration: ${INSTALL_DIR}"
     echo "     - Cloudflared-Konfiguration: ${CF_CONFIG_DIR} (falls vorhanden)"
     echo ""
 
-    if ! confirm "Wirklich alles deinstallieren?"; then
+    if ! confirm "Wirklich alles restlos deinstallieren & zurücksetzen?"; then
         info "Abgebrochen."
         exit 0
     fi
+
+    # Prozesse beenden
+    if command -v fuser &>/dev/null; then
+        sudo fuser -k 8080/tcp 2>/dev/null || true
+    fi
+    sudo pkill -f "python3.*app.py" 2>/dev/null || true
+    success "Laufende Server-Prozesse beendet."
 
     # Systemd-Services stoppen & entfernen
     if systemctl is-active --quiet "${SERVICE_NAME}" 2>/dev/null; then
@@ -134,6 +142,10 @@ do_uninstall() {
         sudo rm -rf "${CF_CONFIG_DIR}"
         success "Cloudflared-Konfiguration entfernt: ${CF_CONFIG_DIR}"
     fi
+    if [[ -d "$HOME/.cloudflared" ]]; then
+        rm -rf "$HOME/.cloudflared"
+        success "~/.cloudflared entfernt."
+    fi
 
     sudo systemctl daemon-reload 2>/dev/null || true
 
@@ -143,8 +155,19 @@ do_uninstall() {
         success "Installationsverzeichnis entfernt: ${INSTALL_DIR}"
     fi
 
+    # Lokales Verzeichnis aufräumen falls darin ausgeführt
+    CURRENT_DIR="$(pwd)"
+    if [[ -f "${CURRENT_DIR}/app.py" ]]; then
+        rm -f "${CURRENT_DIR}/.env"
+        rm -rf "${CURRENT_DIR}/data"
+        if [[ -d "${CURRENT_DIR}/media" ]]; then
+            find "${CURRENT_DIR}/media" -type f ! -name ".gitkeep" -delete 2>/dev/null || true
+        fi
+        success "Lokale Konfigurationen (.env, data/) zurückgesetzt."
+    fi
+
     echo ""
-    success "${BOLD}Deinstallation abgeschlossen.${RESET}"
+    success "${BOLD}InfoBildschirm wurde vollständig deinstalliert & zurückgesetzt.${RESET}"
     echo ""
     exit 0
 }
