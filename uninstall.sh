@@ -59,6 +59,11 @@ echo -e "${RED}│${RESET}  🗑️  ${BOLD}InfoBildschirm – Kompletter Reset$
 echo -e "${RED}└──────────────────────────────────────────┘${RESET}"
 echo ""
 
+echo -e "  ${YELLOW}ℹ${RESET} Dieses Skript benötigt Administratorrechte (sudo)."
+# sudo-Timestamp aktualisieren, damit spätere sudo-Befehle (die stderr nach /dev/null umleiten) nicht unsichtbar hängen!
+sudo -v
+echo ""
+
 echo -e "  ${YELLOW}Folgendes wird restlos beendet und gelöscht:${RESET}"
 echo -e "   - Alle laufenden InfoBildschirm-Prozesse (Port 8080)"
 echo -e "   - Systemd-Dienste: ${BOLD}${SERVICE_NAME}${RESET}, ${BOLD}${CF_SERVICE_NAME}${RESET}"

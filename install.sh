@@ -99,6 +99,11 @@ do_uninstall() {
     banner
     step "🗑️" "Deinstallation & Reset"
 
+    echo -e "  ${YELLOW}ℹ${RESET} Dieses Skript benötigt Administratorrechte (sudo)."
+    # sudo-Timestamp aktualisieren, damit spätere sudo-Befehle (die stderr nach /dev/null umleiten) nicht unsichtbar hängen!
+    sudo -v
+    echo ""
+
     warn "Folgendes wird vollständig entfernt:"
     echo "     - Alle laufenden Server-Prozesse (Port 8080)"
     echo "     - Systemd-Service: ${SERVICE_NAME}"
@@ -212,6 +217,11 @@ fi
 # ═════════════════════════════════════════════════════════════════════════════
 
 banner
+
+echo -e "  ${YELLOW}ℹ${RESET} Dieses Skript benötigt Administratorrechte (sudo)."
+# sudo-Timestamp aktualisieren, damit spätere sudo-Befehle nicht unsichtbar hängen
+sudo -v
+echo ""
 
 # ─── Schritt 1/5: Systemprüfung ──────────────────────────────────────────────
 
