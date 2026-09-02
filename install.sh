@@ -19,6 +19,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 CYAN='\033[0;36m'
+MAGENTA='\033[0;35m'
 BOLD='\033[1m'
 DIM='\033[2m'
 RESET='\033[0m'
@@ -46,21 +47,38 @@ UNINSTALL=false
 PORT=8080
 TUNNEL_URL=""
 
-# ─── Hilfsfunktionen ─────────────────────────────────────────────────────────
+# ─── UI Hilfsfunktionen (Modern CLI) ─────────────────────────────────────────
 
 banner() {
-    echo ""
-    echo -e "${CYAN}┌──────────────────────────────────────────┐${RESET}"
-    echo -e "${CYAN}│${RESET}  🖥️  ${BOLD}InfoBildschirm – Setup${RESET}             ${CYAN}│${RESET}"
-    echo -e "${CYAN}└──────────────────────────────────────────┘${RESET}"
-    echo ""
+    clear
+    echo -e ""
+    echo -e "  ${CYAN}${BOLD}InfoBildschirm${RESET} ${DIM}Setup & Onboarding${RESET}"
+    echo -e "  ──────────────────────────────────────"
+    echo -e ""
 }
 
 info()    { echo -e "  ${BLUE}ℹ${RESET}  $*"; }
 success() { echo -e "  ${GREEN}✔${RESET}  $*"; }
 warn()    { echo -e "  ${YELLOW}⚠${RESET}  $*"; }
 error()   { echo -e "  ${RED}✖${RESET}  $*"; }
-step()    { echo -e "\n${BOLD}${CYAN}[$1]${RESET} ${BOLD}$2${RESET}\n"; }
+step()    { echo -e "\n  ${MAGENTA}●${RESET}  ${BOLD}$2${RESET}\n"; }
+
+# Animierter Spinner für Hintergrund-Prozesse
+spinner() {
+    local pid=$1
+    local delay=0.1
+    local spinstr='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+    while [ "$(ps a | awk '{print $1}' | grep "$pid")" ]; do
+        local temp=${spinstr#?}
+        printf "  ${CYAN}%c${RESET}  %s" "$spinstr" "$2"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\r"
+    done
+    printf " \b\b\b\b"
+    wait $pid
+    return $?
+}
 
 # Frage mit Default-Wert
 ask() {
@@ -69,10 +87,12 @@ ask() {
     local var_name="$3"
     local input
     if [[ -n "$default" ]]; then
-        read_tty -rp "  → ${prompt} [${default}]: " input
+        echo -en "  ${CYAN}?${RESET}  ${prompt} ${DIM}[${default}]${RESET} "
+        read_tty input
         eval "$var_name=\"${input:-$default}\""
     else
-        read_tty -rp "  → ${prompt}: " input
+        echo -en "  ${CYAN}?${RESET}  ${prompt} "
+        read_tty input
         eval "$var_name=\"${input}\""
     fi
 }
@@ -81,7 +101,8 @@ ask() {
 confirm() {
     local prompt="$1"
     local answer
-    read_tty -rp "  → ${prompt} [j/N]: " answer
+    echo -en "  ${CYAN}?${RESET}  ${prompt} ${DIM}[y/N]${RESET} "
+    read_tty answer
     [[ "${answer,,}" == "j" || "${answer,,}" == "ja" || "${answer,,}" == "y" || "${answer,,}" == "yes" ]]
 }
 
@@ -89,7 +110,8 @@ confirm() {
 confirm_yes() {
     local prompt="$1"
     local answer
-    read_tty -rp "  → ${prompt} [J/n]: " answer
+    echo -en "  ${CYAN}?${RESET}  ${prompt} ${DIM}[Y/n]${RESET} "
+    read_tty answer
     [[ "${answer,,}" != "n" && "${answer,,}" != "nein" && "${answer,,}" != "no" ]]
 }
 
@@ -299,7 +321,8 @@ if [[ -d "${INSTALL_DIR}/.git" ]]; then
     echo "    2) Neu installieren (Verzeichnis löschen & neu klonen)"
     echo "    3) Abbrechen"
     echo ""
-    read_tty -rp "  → Auswahl [1]: " CHOICE
+    echo -en "  ${CYAN}?${RESET}  Auswahl ${DIM}[1]${RESET} "
+    read_tty CHOICE
     CHOICE="${CHOICE:-1}"
 
     case "$CHOICE" in
@@ -376,14 +399,14 @@ step "3/5" "Konfiguration (interaktiv)"
 echo ""
 info "Admin-Passwort für die Verwaltungsoberfläche festlegen."
 while true; do
-    echo -n "  → Admin-Passwort: "
+    echo -en "  ${CYAN}?${RESET}  Admin-Passwort: "
     read_tty -rs ADMIN_PASSWORD
     echo ""
     if [[ -z "$ADMIN_PASSWORD" ]]; then
         warn "Passwort darf nicht leer sein."
         continue
     fi
-    echo -n "  → Passwort bestätigen: "
+    echo -en "  ${CYAN}?${RESET}  Passwort bestätigen: "
     read_tty -rs ADMIN_PASSWORD_CONFIRM
     echo ""
     if [[ "$ADMIN_PASSWORD" == "$ADMIN_PASSWORD_CONFIRM" ]]; then
@@ -568,7 +591,8 @@ echo "    3) 🌐 Cloudflare Fester Tunnel (eigene Domain & Cloudflare-Account)"
 echo -e "       ${DIM}→ Feste Schul-Domain (z.B. https://info.schule.de), permanente Anbindung${RESET}"
 echo -e "       ${DIM}→ Kein Router-Portforwarding nötig${RESET}"
 echo ""
-read_tty -rp "  → Auswahl [1]: " ACCESS_CHOICE
+echo -en "  ${CYAN}?${RESET}  Auswahl ${DIM}[1]${RESET} "
+read_tty ACCESS_CHOICE
 ACCESS_CHOICE="${ACCESS_CHOICE:-1}"
 
 if [[ "$ACCESS_CHOICE" == "2" || "$ACCESS_CHOICE" == "3" ]]; then
