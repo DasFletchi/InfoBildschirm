@@ -16,7 +16,8 @@ curl -sSL https://raw.githubusercontent.com/DasFletchi/InfoBildschirm/main/insta
 ```
 
 Der interaktive Installer führt dich Schritt für Schritt durch alles:
-1. **Systemprüfung** (Python 3.10+, Linux, Git)
+1. **Systemprüfung** (Python 3.10+, Linux, Git). 
+   *Fehlende Pakete werden auf Systemen mit `apt`-Paketmanager (wie Raspberry Pi OS, Debian, Ubuntu) auf Wunsch automatisch installiert.*
 2. **Installation** nach `/opt/infobildschirm`
 3. **Onboarding**: Admin-Passwort setzen & Schulstandort wählen (*Standard: Göttingen*)
 4. **Autostart**: Systemd-Service `infobildschirm.service` einrichten
