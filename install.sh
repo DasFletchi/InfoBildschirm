@@ -554,7 +554,7 @@ info "Erstelle ${SERVICE_FILE}..."
 
 sudo tee "${SERVICE_FILE}" > /dev/null <<SERVICEEOF
 [Unit]
-Description=InfoBildschirm Digital Signage
+Description=Display Digital Signage
 After=network.target
 
 [Service]
@@ -589,7 +589,7 @@ success "Service gestartet."
 
 step "5/5" "Erreichbarkeit & Internet-Zugriff"
 
-echo -e "  ${DIM}Wähle, wie auf den InfoBildschirm zugegriffen werden soll:${RESET}"
+echo -e "  ${DIM}Wähle, wie auf das Display zugegriffen werden soll:${RESET}"
 echo ""
 echo "    1) 🏠 Nur im Schul-Intranet (oder eigenes Router-Portforwarding)"
 echo -e "       ${DIM}→ Keine Zusatztools nötig, sofort startklar${RESET}"
@@ -827,7 +827,7 @@ fi
 
 LOCAL_URL="http://${LAN_IP}:${PORT}"
 
-echo -e "  ${GREEN}${BOLD}✨  InfoBildschirm ist bereit!${RESET}"
+echo -e "  ${GREEN}${BOLD}✨  Display ist bereit!${RESET}"
 echo -e "  ${GREEN}──────────────────────────────────────────────────${RESET}"
 echo -e ""
 echo -e "  ${CYAN}🏠  Intranet (Schul-WLAN):${RESET}"

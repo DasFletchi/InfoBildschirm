@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ──────────────────────────────────────────────────────────────────────────────
-# InfoBildschirm – Vollständiger Deinstaller & Reset
+# Display – Vollständiger Deinstaller & Reset
 #
 # Einzeiler für die README:
 #   curl -sSL https://raw.githubusercontent.com/DasFletchi/InfoBildschirm/main/uninstall.sh | bash
@@ -55,7 +55,7 @@ done
 
 clear
 echo -e ""
-echo -e "  ${RED}${BOLD}InfoBildschirm${RESET} ${DIM}Kompletter Reset${RESET}"
+echo -e "  ${RED}${BOLD}Display${RESET} ${DIM}Kompletter Reset${RESET}"
 echo -e "  ──────────────────────────────────────"
 echo -e ""
 
@@ -65,7 +65,7 @@ sudo -v
 echo ""
 
 echo -e "  ${YELLOW}Folgendes wird restlos beendet und gelöscht:${RESET}"
-echo -e "   - Alle laufenden InfoBildschirm-Prozesse (Port 8080)"
+echo -e "   - Alle laufenden Display-Prozesse (Port 8080)"
 echo -e "   - Systemd-Dienste: ${BOLD}${SERVICE_NAME}${RESET}, ${BOLD}${CF_SERVICE_NAME}${RESET}"
 echo -e "   - Installationsverzeichnis: ${BOLD}${INSTALL_DIR}${RESET}"
 echo -e "   - Alle Konfigurationen: ${BOLD}.env${RESET}, Datenbanken (${BOLD}data/*.db${RESET})"
@@ -96,7 +96,7 @@ echo -e "  ${GREEN}✔${RESET}  Laufende Server-Prozesse beendet."
 
 echo -e "  ${BLUE}ℹ${RESET}  2/4: Entferne Systemd-Dienste..."
 
-# InfoBildschirm Service
+# Display Service
 if systemctl is-active --quiet "${SERVICE_NAME}" 2>/dev/null; then
     sudo systemctl stop "${SERVICE_NAME}" 2>/dev/null || true
 fi
@@ -163,6 +163,6 @@ if [[ -f "${CURRENT_DIR}/app.py" ]]; then
 fi
 
 echo -e "  ${GREEN}──────────────────────────────────────────────────────────${RESET}"
-echo -e "  ${GREEN}${BOLD}✅  InfoBildschirm wurde komplett zurückgesetzt!${RESET}"
+echo -e "  ${GREEN}${BOLD}✅  Display wurde komplett zurückgesetzt!${RESET}"
 echo -e "  ${GREEN}──────────────────────────────────────────────────────────${RESET}"
 echo ""
