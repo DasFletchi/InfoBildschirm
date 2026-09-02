@@ -257,40 +257,44 @@ if [[ "$(uname -s)" != "Linux" ]]; then
 fi
 success "Betriebssystem: Linux ($(uname -m))"
 
-# Python >= 3.10
-if command -v python3 &>/dev/null; then
-    PYTHON_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-    PYTHON_MAJOR=$(echo "$PYTHON_VERSION" | cut -d. -f1)
-    PYTHON_MINOR=$(echo "$PYTHON_VERSION" | cut -d. -f2)
-    if [[ "$PYTHON_MAJOR" -lt 3 ]] || { [[ "$PYTHON_MAJOR" -eq 3 ]] && [[ "$PYTHON_MINOR" -lt 10 ]]; }; then
-        error "Python >= 3.10 wird benötigt (gefunden: ${PYTHON_VERSION})"
-        error "Installation: sudo apt update && sudo apt install python3"
+# Automatische Paketinstallation (git, curl, python3)
+MISSING_PKGS=()
+for pkg in python3 git curl; do
+    if ! command -v "$pkg" &>/dev/null; then
+        MISSING_PKGS+=("$pkg")
+    fi
+done
+
+if [[ ${#MISSING_PKGS[@]} -gt 0 ]]; then
+    warn "Fehlende Pakete: ${MISSING_PKGS[*]}"
+    if command -v apt-get &>/dev/null; then
+        if confirm_yes "Sollen die fehlenden Pakete jetzt automatisch installiert werden?"; then
+            info "Installiere ${MISSING_PKGS[*]}..."
+            sudo apt-get update -qq || true
+            sudo apt-get install -y "${MISSING_PKGS[@]}"
+            success "Pakete erfolgreich installiert."
+        else
+            error "Abbruch. Bitte manuell installieren: sudo apt install ${MISSING_PKGS[*]}"
+            exit 1
+        fi
+    else
+        error "Kein apt-Paketmanager gefunden. Bitte ${MISSING_PKGS[*]} manuell installieren."
         exit 1
     fi
-    success "Python: ${PYTHON_VERSION}"
-else
-    error "Python3 ist nicht installiert."
-    error "Installation: sudo apt update && sudo apt install python3"
-    exit 1
 fi
 
-# Git
-if command -v git &>/dev/null; then
-    success "Git: $(git --version | awk '{print $3}')"
-else
-    error "Git ist nicht installiert."
-    error "Installation: sudo apt update && sudo apt install git"
+# Python Version >= 3.10 prüfen
+PYTHON_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+PYTHON_MAJOR=$(echo "$PYTHON_VERSION" | cut -d. -f1)
+PYTHON_MINOR=$(echo "$PYTHON_VERSION" | cut -d. -f2)
+if [[ "$PYTHON_MAJOR" -lt 3 ]] || { [[ "$PYTHON_MAJOR" -eq 3 ]] && [[ "$PYTHON_MINOR" -lt 10 ]]; }; then
+    error "Python >= 3.10 wird benötigt (gefunden: ${PYTHON_VERSION})"
+    error "Dein Betriebssystem hat eine zu alte Python-Version."
     exit 1
 fi
-
-# curl (benötigt für Geocoding API und ggf. cloudflared-Download)
-if command -v curl &>/dev/null; then
-    success "curl: verfügbar"
-else
-    error "curl ist nicht installiert."
-    error "Installation: sudo apt update && sudo apt install curl"
-    exit 1
-fi
+success "Python: ${PYTHON_VERSION}"
+success "Git: $(git --version | awk '{print $3}')"
+success "curl: verfügbar"
 
 # Netzwerk
 if curl -sfm 5 "https://github.com" -o /dev/null 2>/dev/null; then
