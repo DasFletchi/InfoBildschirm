@@ -11,11 +11,6 @@
 # ──────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-# Wenn über Pipe ausgeführt (curl | bash), Terminal für Tastatureingaben (/dev/tty) nutzen
-if [[ ! -t 0 ]] && [[ -e /dev/tty ]]; then
-    exec < /dev/tty
-fi
-
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -24,6 +19,14 @@ CYAN='\033[0;36m'
 BOLD='\033[1m'
 DIM='\033[2m'
 RESET='\033[0m'
+
+read_tty() {
+    if [[ -e /dev/tty ]]; then
+        read "$@" < /dev/tty
+    else
+        read "$@"
+    fi
+}
 
 INSTALL_DIR="/opt/infobildschirm"
 CUSTOM_PATH=""
@@ -68,7 +71,7 @@ fi
 echo ""
 
 if ! $FORCE; then
-    read -rp "  → Wirklich alles restlos löschen & zurücksetzen? [j/N]: " CONFIRM
+    read_tty -rp "  → Wirklich alles restlos löschen & zurücksetzen? [j/N]: " CONFIRM
     if [[ "${CONFIRM,,}" != "j" && "${CONFIRM,,}" != "ja" && "${CONFIRM,,}" != "y" && "${CONFIRM,,}" != "yes" ]]; then
         echo -e "  ${BLUE}ℹ${RESET}  Deinstallation abgebrochen."
         exit 0
