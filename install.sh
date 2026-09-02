@@ -421,7 +421,7 @@ if confirm "Anderen Standort wählen?"; then
         GEO_RESPONSE=$(curl -sfm 10 "https://geocoding-api.open-meteo.com/v1/search?name=${ENCODED_CITY}&count=1&language=de" 2>/dev/null || echo "")
 
         if [[ -z "$GEO_RESPONSE" ]]; then
-            warn "Konnte Geocoding-API nicht erreichen. Verwende Standard (Berlin)."
+            warn "Konnte Geocoding-API nicht erreichen. Verwende Standard (Göttingen)."
             break
         fi
 
@@ -454,7 +454,7 @@ except Exception:
             warn "Kein Ergebnis für '${CITY_SEARCH}'. Bitte erneut versuchen."
             continue
         elif [[ "$GEO_RESULT" == "ERROR" ]]; then
-            warn "Fehler beim Parsen der Antwort. Verwende Standard (Berlin)."
+            warn "Fehler beim Parsen der Antwort. Verwende Standard (Göttingen)."
             break
         fi
 
@@ -475,7 +475,7 @@ except Exception:
         # Sonst: Schleife wiederholen
     done
 else
-    success "Standort: Berlin (Standard)"
+    success "Standort: Göttingen (Standard)"
 fi
 
 # Port
