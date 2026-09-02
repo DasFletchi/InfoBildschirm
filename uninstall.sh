@@ -164,8 +164,5 @@ fi
 echo ""
 echo -e "${GREEN}┌──────────────────────────────────────────────────────────┐${RESET}"
 echo -e "${GREEN}│  ✅ InfoBildschirm wurde komplett zurückgesetzt!        │${RESET}"
-echo -e "${GREEN}│                                                          │${RESET}"
-echo -e "${GREEN}│  Du kannst das Onboarding jetzt frisch testen mit:      │${RESET}"
-echo -e "${GREEN}│  curl -sSL https://raw.githubusercontent.com/...        │${RESET}"
 echo -e "${GREEN}└──────────────────────────────────────────────────────────┘${RESET}"
 echo ""
