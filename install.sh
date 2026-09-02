@@ -51,9 +51,16 @@ TUNNEL_URL=""
 
 banner() {
     clear
-    echo -e ""
-    echo -e "  ${CYAN}${BOLD}InfoBildschirm${RESET} ${DIM}Setup & Onboarding${RESET}"
-    echo -e "  ──────────────────────────────────────"
+    echo -e "${CYAN}${BOLD}"
+    echo '___________.__          __         .__      _________       _____  __   '
+    echo '\_   _____/|  |   _____/  |_  ____ |  |__  /   _____/ _____/ ____\/  |_ '
+    echo ' |    __)  |  | _/ __ \   __\/ ___\|  |  \ \_____  \ /  _ \   __\\   __\'
+    echo ' |     \   |  |_\  ___/|  | \  \___|   Y  \/        (  <_> )  |   |  |  '
+    echo ' \___  /   |____/\___  >__|  \___  >___|  /_______  /\____/|__|   |__|  '
+    echo '     \/              \/          \/     \/        \/                    '
+    echo -e "${RESET}"
+    echo -e "  ${DIM}Digital Signage Setup & Onboarding${RESET}"
+    echo -e "  ──────────────────────────────────────────────────────────────────────"
     echo -e ""
 }
 

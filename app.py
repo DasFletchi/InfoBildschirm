@@ -855,32 +855,39 @@ class InfoHandler(BaseHTTPRequestHandler):
     # ================================================================
 
     def _page_mode_picker(self) -> None:
+        extra_head = '<link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">'
         body = """
 <div class="container" style="display:flex;align-items:center;justify-content:center;min-height:90vh">
   <div style="max-width:580px;width:100%">
-    <h1 style="text-align:center;font-weight:300;font-size:2.4rem;margin-bottom:0.3rem;letter-spacing:-0.5px">
-      🖥️ InfoBildschirm</h1>
-    <p style="text-align:center;color:#94a3b8;margin-bottom:2.2rem;font-size:1.05rem">Digitales Informationssystem</p>
+    <h1 style="text-align:center;font-weight:400;font-size:3.5rem;margin-bottom:0.1rem;letter-spacing:1px;font-family:'Righteous', cursive;color:#38bdf8;">
+      FletchSoft</h1>
+    <p style="text-align:center;color:#94a3b8;margin-bottom:2.2rem;font-size:1.05rem">Digital Signage Server</p>
     <div class="mode-grid">
       <a class="mode-link" href="/display">
-        <div class="card" style="text-align:center;padding:2.2rem 1.2rem">
+        <div class="card" style="text-align:center;padding:2.2rem 1.2rem;transition:transform 0.2s, background 0.2s">
           <div style="font-size:3rem;margin-bottom:0.6rem">📺</div>
           <h2 style="margin:0 0 0.4rem;font-size:1.35rem">Anzeige-Modus</h2>
           <p style="color:#94a3b8;font-size:0.92rem;margin:0">Vollbild-Diashow für den Monitor</p>
         </div>
       </a>
       <a class="mode-link" href="/manage">
-        <div class="card" style="text-align:center;padding:2.2rem 1.2rem">
+        <div class="card" style="text-align:center;padding:2.2rem 1.2rem;transition:transform 0.2s, background 0.2s">
           <div style="font-size:3rem;margin-bottom:0.6rem">⚙️</div>
           <h2 style="margin:0 0 0.4rem;font-size:1.35rem">Verwaltungs-Modus</h2>
           <p style="color:#94a3b8;font-size:0.92rem;margin:0">Inhalte hochladen & Playlist steuern</p>
         </div>
       </a>
     </div>
+    <style>
+      .mode-link { text-decoration: none !important; }
+      .mode-link:hover .card { transform: translateY(-3px); background: #1e293b; border-color:#38bdf8; }
+      .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+      @media (max-width: 500px) { .mode-grid { grid-template-columns: 1fr; } }
+    </style>
   </div>
 </div>
 """
-        self._respond_html(html_page("InfoBildschirm", body))
+        self._respond_html(html_page("FletchSoft", body, extra_head))
 
     def _page_display(self) -> None:
         body = """
